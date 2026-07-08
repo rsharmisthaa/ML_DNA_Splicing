@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DNA Splice Analysis Report</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body class="bg-gray-100">
+
+<div class="max-w-7xl mx-auto p-8">
+    <!-- ================================================= -->
+<!-- REPORT HEADER -->
+<!-- ================================================= -->
+
+<div class="bg-white rounded-xl shadow-lg p-6">
+
+    <h1 class="text-4xl font-bold text-blue-700">
+        DNA Splice Analysis Report
+    </h1>
+
+    <p class="text-gray-600 mt-3">
+
+        <strong>Model:</strong> {{ model }}
+
+        &nbsp; | &nbsp;
+
+        <strong>Accuracy:</strong> {{ dataset_info.accuracy }}%
+
+        &nbsp; | &nbsp;
+
+        <strong>Samples:</strong> {{ dataset_info.samples }}
+
+    </p>
+
+</div>
+
+<!-- ================================================= -->
+<!-- USER INPUT -->
+<!-- ================================================= -->
+
+<div class="bg-blue-50 rounded-xl shadow-lg p-6 mt-6">
+
+<h2 class="text-2xl font-bold mb-4">
+
+User Input
+
+</h2>
+
+<div class="grid grid-cols-2 gap-6">
+
+<div>
+
+<p>
+
+<strong>Sequence Length</strong>
+
+</p>
+
+<p>
+
+{{ dna|length }} bases
+
+</p>
+
+</div>
+
+<div>
+
+<p>
+
+<strong>GC Content</strong>
+
+</p>
+
+<p>
+
+{{ gc }}%
+
+</p>
+
+</div>
+
+<div>
+
+<p>
+
+<strong>AT Content</strong>
+
+</p>
+
+<p>
+
+{{ at }}%
+
+</p>
+
+</div>
+
+<div>
+
+<p>
+
+<strong>Detected Motifs</strong>
+
+</p>
+
+<p>
+
+{{ sites|length }}
+
+</p>
+
+</div>
+
+</div>
+
+<div class="mt-6">
+
+<p class="font-semibold">
+
+DNA Sequence
+
+</p>
+
+<div class="bg-white border rounded p-4 mt-2 font-mono break-all">
+
+{{ dna }}
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- NUCLEOTIDE COMPOSITION -->
+<!-- ================================================= -->
+
+<div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+
+    <h2 class="text-2xl font-bold mb-5">
+        Nucleotide Composition
+    </h2>
+
+    <div class="grid grid-cols-4 gap-4">
+
+        <div class="bg-blue-100 rounded-lg p-5 text-center">
+            <h3 class="text-lg font-bold text-blue-700">A</h3>
+            <p class="text-3xl font-bold mt-2">{{ counts.A }}</p>
+        </div>
+
+        <div class="bg-green-100 rounded-lg p-5 text-center">
+            <h3 class="text-lg font-bold text-green-700">C</h3>
+            <p class="text-3xl font-bold mt-2">{{ counts.C }}</p>
+        </div>
+
+        <div class="bg-yellow-100 rounded-lg p-5 text-center">
+            <h3 class="text-lg font-bold text-yellow-700">G</h3>
+            <p class="text-3xl font-bold mt-2">{{ counts.G }}</p>
+        </div>
+
+        <div class="bg-red-100 rounded-lg p-5 text-center">
+            <h3 class="text-lg font-bold text-red-700">T</h3>
+            <p class="text-3xl font-bold mt-2">{{ counts.T }}</p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- DNA SEQUENCE -->
+<!-- ================================================= -->
+
+<div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+
+<h2 class="text-2xl font-bold mb-5">
+
+DNA Sequence
+
+</h2>
+
+<div class="bg-gray-100 border rounded-lg p-5 font-mono text-sm leading-8 overflow-x-auto">
+
+{% for i in range(0, dna|length, 10) %}
+
+<div>
+
+<span class="text-gray-400 w-10 inline-block">
+
+{{ i }}
+
+</span>
+
+{% for j in range(i, i+10) %}
+
+{% if j < dna|length %}
+
+{{ dna[j] }}
+
+{% endif %}
+
+{% endfor %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- SPLICE MOTIFS -->
+<!-- ================================================= -->
+
+<div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+
+<h2 class="text-2xl font-bold mb-5">
+
+Detected Splice Motifs
+
+</h2>
+
+<table class="w-full border-collapse">
+
+<thead>
+
+<tr class="bg-gray-100">
+
+<th class="border p-3 text-left">
+Type
+</th>
+
+<th class="border p-3 text-center">
+Position
+</th>
+
+<th class="border p-3 text-center">
+Confidence
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for s in sites %}
+
+<tr>
+
+<td class="border p-3">
+{{ s.type }}
+</td>
+
+<td class="border p-3 text-center">
+{{ s.position }}
+</td>
+
+<td class="border p-3 text-center">
+{{ s.confidence }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+{% if sites|length == 0 %}
+
+<tr>
+
+<td colspan="3" class="border p-4 text-center text-gray-500">
+
+No splice motifs detected.
+
+</td>
+
+</tr>
+
+{% endif %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- ================================================= -->
+<!-- MODEL COMPARISON -->
+<!-- ================================================= -->
+
+<div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+
+<h2 class="text-2xl font-bold mb-5">
+
+Model Comparison
+
+</h2>
+
+<table class="w-full border-collapse">
+
+<thead>
+
+<tr class="bg-gray-100">
+
+<th class="border p-3 text-left">
+Model
+</th>
+
+<th class="border p-3 text-center">
+Prediction
+</th>
+
+<th class="border p-3 text-center">
+Confidence
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for name,res in model_results.items() %}
+
+<tr>
+
+<td class="border p-3">
+
+{{ name }}
+
+</td>
+
+<td class="border p-3 text-center">
+
+{{ res.prediction }}
+
+</td>
+
+<td class="border p-3 text-center">
+
+{{ res.confidence }}%
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- ================================================= -->
+<!-- CHARTS -->
+<!-- ================================================= -->
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+
+    <!-- Prediction Probability -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+
+        <h2 class="text-2xl font-bold mb-4 text-center">
+            Prediction Probability
+        </h2>
+
+        <canvas id="predictionChart"></canvas>
+
+    </div>
+
+    <!-- Nucleotide Composition -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+
+        <h2 class="text-2xl font-bold mb-4 text-center">
+            Nucleotide Composition
+        </h2>
+
+        <canvas id="nucleotideChart"></canvas>
+
+    </div>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    // ==============================
+    // Prediction Chart
+    // ==============================
+
+    const labels = JSON.parse('{{ classes | tojson | safe }}');
+    const probs = JSON.parse('{{ probs | tojson | safe }}');
+
+    new Chart(document.getElementById("predictionChart"),{
+
+        type:"polarArea",
+
+        data:{
+
+            labels: labels.map(function(label){
+
+                if(label==1 || label=="1") return "Exon-Intron";
+                if(label==2 || label=="2") return "Intron-Exon";
+                if(label==3 || label=="3") return "Non-Splice";
+
+                return label;
+
+            }),
+
+            datasets:[{
+
+                data: probs.map(p=>p*100),
+
+                backgroundColor:[
+                    "#3B82F6",
+                    "#10B981",
+                    "#EF4444"
+                ],
+
+                borderWidth:2
+
+            }]
+
+        },
+
+        options:{
+
+            responsive:true,
+
+            plugins:{
+
+                legend:{
+                    position:"bottom"
+                }
+
+            }
+
+        }
+
+    });
+});
+</script>
+
+<!-- ================================================= -->
+<!-- FOOTER -->
+<!-- ================================================= -->
+
+<div class="mt-10 text-center text-sm text-gray-500 border-t pt-6">
+
+    <p>
+        ⚠️ Educational tool only. This application is intended for academic purposes and should not be used for clinical diagnosis.
+    </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

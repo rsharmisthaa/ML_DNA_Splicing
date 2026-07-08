@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DNA Splice Analysis</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+
+<h1 class="text-4xl font-bold mb-4">DNA Splice Analysis Tool</h1>
+
+<p class="text-gray-600 mb-6">
+Enter DNA sequence to analyze splice regions
+</p>
+
+<form action="/predict" method="post" class="flex gap-4 w-full max-w-xl">
+<input name="dna"
+class="flex-1 p-3 border rounded"
+placeholder="Enter DNA sequence..."
+required>
+
+<button class="bg-blue-600 text-white px-6 py-2 rounded">
+Analyze
+</button>
+</form>
+
+{% if error %}
+<p class="text-red-500 mt-4">{{ error }}</p>
+{% endif %}
+
+</body>
+</html>
